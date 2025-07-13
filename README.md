@@ -50,3 +50,63 @@ The behavior tree consists of:
 - `src/dummy_nodes.cpp`: Implementation of custom nodes
 - `include/behavior_tree_tutorial/dummy_nodes.h`: Header file for custom nodes
 - `trees/my_tree.xml`: XML definition of the behavior tree
+
+## Tutorial 04: Reactive and Asynchronous behaviors
+
+This tutorial demonstrates:
+- StatefulActionNode for asynchronous actions
+- Difference between Sequence and ReactiveSequence
+
+### Running tutorial 04
+
+Using ros2 run:
+```bash
+# Normal Sequence
+ros2 run behavior_tree_tutorial tutorial_04_sequence
+
+# ReactiveSequence
+ros2 run behavior_tree_tutorial tutorial_04_sequence --reactive
+```
+
+Using launch file:
+```bash
+ros2 launch behavior_tree_tutorial tutorial_04_launch.py
+```
+
+### Expected Output (Normal Sequence)
+
+```
+--- ticking
+[ Battery: OK ]
+Robot says: mission started...
+[ MoveBase: SEND REQUEST ]. goal: x=1.0 y=2.0 theta=3.0
+--- status: RUNNING
+
+--- ticking
+--- status: RUNNING
+
+--- ticking
+[ MoveBase: FINISHED ]
+Robot says: mission completed!
+--- status: SUCCESS
+```
+
+### Expected Output (ReactiveSequence)
+
+```
+--- ticking
+[ Battery: OK ]
+Robot says: mission started...
+[ MoveBase: SEND REQUEST ]. goal: x=1.0 y=2.0 theta=3.0
+--- status: RUNNING
+
+--- ticking
+[ Battery: OK ]
+--- status: RUNNING
+
+--- ticking
+[ Battery: OK ]
+[ MoveBase: FINISHED ]
+Robot says: mission completed!
+--- status: SUCCESS
+```

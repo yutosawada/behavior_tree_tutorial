@@ -26,9 +26,22 @@ ament_target_dependencies(tutorial_01_first_tree
   behaviortree_cpp_v3
 )
 
+# Add executable for tutorial 4
+add_executable(tutorial_04_sequence
+  src/tutorial_04_sequence.cpp
+  src/dummy_nodes.cpp
+)
+
+ament_target_dependencies(tutorial_04_sequence
+  rclcpp
+  std_msgs
+  behaviortree_cpp_v3
+)
+
 # Install targets
 install(TARGETS
   tutorial_01_first_tree
+  tutorial_04_sequence
   DESTINATION lib/${PROJECT_NAME}
 )
 

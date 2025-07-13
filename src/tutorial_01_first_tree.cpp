@@ -9,25 +9,18 @@ using namespace DummyNodes;
 
 int main(int argc, char** argv)
 {
-    // Initialize ROS2
     rclcpp::init(argc, argv);
     auto node = rclcpp::Node::make_shared("behavior_tree_tutorial_01");
-
     RCLCPP_INFO(node->get_logger(), "Starting BehaviorTree Tutorial 01: First Tree");
 
-    // We use the BehaviorTreeFactory to register our custom nodes
     BT::BehaviorTreeFactory factory;
-
-    // The recommended way to create a Node is through inheritance.
+    
     factory.registerNodeType<ApproachObject>("ApproachObject");
 
-    // Registering a SimpleActionNode using a function pointer.
-    // You can use C++11 lambdas or std::bind
     factory.registerSimpleCondition("CheckBattery", [&](BT::TreeNode&) {
         return CheckBattery();
     });
 
-    //You can also create SimpleActionNodes using methods of a class
     GripperInterface gripper;
     factory.registerSimpleAction("OpenGripper", [&](BT::TreeNode&) {
         return gripper.open();
@@ -35,27 +28,22 @@ int main(int argc, char** argv)
     factory.registerSimpleAction("CloseGripper", [&](BT::TreeNode&) {
         return gripper.close();
     });
+    factory.registerNodeType<SaySomething>("SaySomething");
+    factory.registerNodeType<ThinkWhatToSay>("ThinkWhatToSay");
 
-    // Trees are created at deployment-time (i.e. at run-time, but only
-    // once at the beginning).
 
-    // IMPORTANT: when the object "tree" goes out of scope, all the
-    // TreeNodes are destroyed
     try
     {
         // Get package share directory
         std::string package_path = ament_index_cpp::get_package_share_directory("behavior_tree_tutorial");
-        std::string xml_file = package_path + "/trees/my_tree.xml";
+        std::string xml_file = package_path + "/trees/tutorial2.xml";
         
         RCLCPP_INFO(node->get_logger(), "Loading tree from: %s", xml_file.c_str());
         auto tree = factory.createTreeFromFile(xml_file);
 
-        // To "execute" a Tree you need to "tick" it.
-        // The tick is propagated to the children based on the logic of the tree.
-        // In this case, the entire sequence is executed, because all the children
-        // of the Sequence return SUCCESS.
+
         RCLCPP_INFO(node->get_logger(), "Executing behavior tree...");
-        tree.tickWhileRunning();
+        tree.tickRootWhileRunning();
 
         RCLCPP_INFO(node->get_logger(), "Behavior tree execution completed successfully!");
     }
@@ -70,9 +58,4 @@ int main(int argc, char** argv)
     return 0;
 }
 
-/* Expected output:
-    [ Battery: OK ]
-    GripperInterface::open
-    ApproachObject: approach_object
-    GripperInterface::close
-*/
+
